@@ -1,6 +1,6 @@
-var gridSize = parseInt(document.getElementById('grid_size').value);  //网格大小
-var gridX = 0, gridY = 0;  //网格数量
-var marker = 1;  //标记内容
+var GRIDSIZE = parseInt(document.getElementById('grid_size').value);  //网格大小
+var GRIDX = 0, GRIDY = 0;  //网格数量
+var MARKER = 1;  //标记内容
 
 
 window.onload = function () {
@@ -14,19 +14,19 @@ window.onload = function () {
 
 	// 设置网格大小
 	document.getElementById('grid_size').onchange = function () {
-		gridSize = parseInt($("#grid_size").val());  //网格大小
+		GRIDSIZE = parseInt($("#grid_size").val());  //网格大小
     	clearOutput();  //清除点阵
 		init();  //初始化
     }
 
     // 标记道路
 	document.getElementById('mark_road').onclick = function () {
-    	marker = 1;
+    	MARKER = 1;
     }
 
     // 标记柱子
 	document.getElementById('mark_pillar').onclick = function () {
-    	marker = 2;
+    	MARKER = 2;
     }
 
     // 选择标记内容
@@ -47,7 +47,7 @@ window.onload = function () {
 
     // 点击标记道路
     $("#grid").on("click", "a", function () {
-    	markGrid($(this), marker);
+    	markGrid($(this), MARKER);
     })
 }
 
@@ -63,30 +63,30 @@ function init () {
 	else {
 		imgObj.src = "map/" + $("#file").val();
 		imgObj.onload = function(){
-			gridX = parseInt(imgObj.width/gridSize);
-			gridY = parseInt(imgObj.height/gridSize);
-			mapInit(gridX,gridY,imgObj.src);  //地图初始化
-			gridInit(gridX,gridY);  //网格初始化
+			GRIDX = parseInt(imgObj.width/GRIDSIZE);
+			GRIDY = parseInt(imgObj.height/GRIDSIZE);
+			mapInit(GRIDX,GRIDY,imgObj.src);  //地图初始化
+			gridInit(GRIDX,GRIDY);  //网格初始化
 		};
 	}
 }
 
 
 // 图片初始化
-function mapInit (gridX, gridY, src) {
+function mapInit (GRIDX, GRIDY, src) {
 	$("#map_wrap").removeAttr("style");
-	$("#map_wrap").css({"width":gridX*gridSize + "px","height":gridY*gridSize + "px","background":"url(" + src + ") no-repeat left top"});
+	$("#map_wrap").css({"width":GRIDX*GRIDSIZE + "px","height":GRIDY*GRIDSIZE + "px","background":"url(" + src + ") no-repeat left top"});
 }
 
 
 // 网格初始化
-function gridInit (gridX, gridY) {
+function gridInit (GRIDX, GRIDY) {
 	$("#grid").removeAttr("style");
 	$("#grid").html("");
-	$("#grid").css({"width":gridX*gridSize + "px","height":gridY*gridSize + "px"});
+	$("#grid").css({"width":GRIDX*GRIDSIZE + "px","height":GRIDY*GRIDSIZE + "px"});
 	var gridHtml = "";
-	for (var j = 0; j < gridY; j++) {
-		for (var i = 0; i < gridX; i++) {
+	for (var j = 0; j < GRIDY; j++) {
+		for (var i = 0; i < GRIDX; i++) {
 			var classX = (i%5==0)?"left":(i%5==4)?"right":"";
 			var classY = (j%5==0)?"top":(j%5==4)?"bottom":"";
 			gridHtml = gridHtml + "<a class='" + classX + " " + classY +"' href='javascript:;' rel='0'></a>";
@@ -94,7 +94,7 @@ function gridInit (gridX, gridY) {
 		};
 	};
 	$("#grid").html(gridHtml);
-	$("#grid a").css({"width":gridSize-2 + "px","height":gridSize-2 + "px"});
+	$("#grid a").css({"width":GRIDSIZE-2 + "px","height":GRIDSIZE-2 + "px"});
 }
 
 
@@ -140,7 +140,7 @@ function exportMatrix () {
 		tableHtml = "<tr>" + tableHtml;
 		$("#grid a").each(function (i) {
 			tableHtml = tableHtml + "<td>" + $(this).attr("rel") + "</td>";
-			if (i%gridX == gridX-1) {
+			if (i%GRIDX == GRIDX-1) {
 				tableHtml = tableHtml + "</tr><tr>";
 			};
 		})
