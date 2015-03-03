@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>车位点编码对照</title>
+<link href="http://greenzorro.github.io/colacdn/assets/css/reset.css" rel="stylesheet" type="text/css" />
+<link href="http://greenzorro.github.io/colacdn/assets/css/global.css" rel="stylesheet" type="text/css" />
+<script src="http://greenzorro.github.io/colacdn/assets/js/jquery-latest.js"></script>
+<style type="text/css">
+#map {
+	background: no-repeat center center;
+}
+#map span {
+	display: block;
+	width: 20px;
+	height: 20px;
+	background: rgba(255,255,255,0.4);
+	color: #333;
+	font-weight: bold;
+	position: absolute;
+}
+input {
+	display: block;
+	position: fixed;
+	left: 0;
+	top: 0;
+}
+</style>
+</head>
+
+<body>
+
+<div id="map" class="clearfix"></div>
+<input id="files" type="file">
+
+<script type="text/javascript">
+window.onload = function () {
+	var gridSize = 20;
+	var map = document.getElementById('map');
+	var grid = document.getElementById('grid');
+	var data = [];
+
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+	// 选择文件
+	function handleFileSelect (e) {
+		var reader = e.target.files;
+		var mapId = reader[0].name.split(".")[0];
+		var file = new FileReader();
+		file.onload = (function (theFile) {
+			return function (e) {
+				data = file.result.split(",");
+			}
+		})(reader[0])
+		file.readAsText(reader[0]);
+		renderBg(mapId);  //生成地图
+	}
+
+	// 生成地图
+	function renderBg (mapId) {
+		var imgObj = new Image();
+		imgObj.src = "data/" + mapId + ".png";
+		imgObj.onload = function () {
+			var mapW = imgObj.width, mapH = imgObj.height;
+			$(map).css("background-image","url(" + imgObj.src + ")");
+			$(map).width(mapW);
+			$(map).height(mapH);
+			renderGrids(mapW/gridSize, mapH/gridSize);  //生成网格
+		}
+	}
+
+	// 生成网格
+	function renderGrids (x, y) {
+		var posL, posT;
+		$(map).html("");
+		for (var i = 0; i < x*y; i++) {
+			if (data[i] == 2 || data[i] == 4) {
+				posL = ((i+1)%x - 1)*gridSize;
+				posT = Math.floor((i+1)/x)*gridSize;
+				$(map).append("<span style='left:" + posL + "px; top:" + posT + "px'></span>");
+			}
+		}
+		$("#map span").each(function (i) {
+			$(this).html(i+1);
+		})
+	}
+}
+</script>
+</body>
+</html>
